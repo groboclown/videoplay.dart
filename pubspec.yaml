@@ -1,10 +1,10 @@
 name: videoplay
 version: 0.1.0
-author: Groboclown
-description: A pub package
+author: Groboclown <matt@groboclown.net>
+description: Embed video players in your webpage, and control them in Dart.
 homepage: https://github.com/groboclown/videoplay.dart
 environment:
   sdk: '>=1.6.0'
 documentation: https://github.com/groboclown/videoplay.dart
 dependencies:
-  browser: any
+  browser: '>=0.10.0+2 <0.11.0'
