@@ -29,7 +29,7 @@ To add the library to your project, add it as a dependency to your
     name: VideoWatcher
     version: 1.2.3
     dependencies:
-        videoplay: '>=0.1.1 <1.0.0'
+        videoplay: '>=0.2.0 <1.0.0'
 
 then install with `pub install`, followed by importing it into your application:
 

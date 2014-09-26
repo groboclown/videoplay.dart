@@ -48,17 +48,16 @@ bool isYouTubeSupported() {
 
 
 // a EmbedVideoPlayer
-Future<VideoPlayer> youTubeProviderEmbedder(Element wrappingElement,
-        String videoId, VideoProviderAttributes attributes) {
+Future<VideoPlayer> embedYouTube(Element wrappingElement,
+        String videoId, YouTubeAttributes attributes) {
     if (! (attributes is YouTubeAttributes)) {
         throw new VideoProviderException(
                 "Invalid attribute type: ${attributes}");
     }
-    YouTubeAttributes yta = attributes;
 
     return embedYouTubeVideoPlayer(wrappingElement,
-            videoId, width: yta.width, height: yta.height,
-            swfObjectSrcLocation: yta.swfObjectSrcLocation,
-            swfObjectName: yta.swfObjectName);
+            videoId, width: attributes.width, height: attributes.height,
+            swfObjectSrcLocation: attributes.swfObjectSrcLocation,
+            swfObjectName: attributes.swfObjectName);
 }
 

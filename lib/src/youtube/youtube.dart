@@ -123,6 +123,10 @@ class YouTubeVideoPlayer implements VideoPlayer {
 
 
 /**
+ * *WARNING* this function is deperecated and will be removed in the near
+ * future.  You're encouraged to instead use the method `embedYouTube`
+ * found in the `provider.dart` file.
+ *
  * Embeds the YouTube video player into the `wrappingElement`.  This player
  * will have all the native YouTube controls (called the "chrome").
  *

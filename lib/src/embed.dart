@@ -96,7 +96,7 @@ void initializeProviders() {
         if (isYouTubeSupported()) {
             registerVideoProvider(
                 new YouTubeProvider(),
-                youTubeProviderEmbedder);
+                embedYouTube);
         }
     }
 }
