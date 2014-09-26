@@ -77,7 +77,13 @@ abstract class VideoPlayer {
      * The text of the current error message, or `null` if there is no current
      * error.
      */
-    String get error;
+    String get errorText;
+
+    /**
+     * `0` if there is no error, otherwise a video player dependent error
+     * message code.
+     */
+    int get errorCode;
 
     /**
      * Event stream for changes to the video player status.

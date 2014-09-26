@@ -23,7 +23,7 @@ class YouTubeVideoPlayer implements VideoPlayer {
     final YouTubeEmbedder _embedder;
 
     @override
-    bool get hasVideo => videoId != null && _error != null;
+    bool get hasVideo => videoId != null && errorCode == 0;
 
     @override
     Duration get playbackTime {
@@ -56,9 +56,11 @@ class YouTubeVideoPlayer implements VideoPlayer {
         return _secondsToDuration(seconds);
     }
 
-    String _error;
     @override
-    String get error => _error;
+    String get errorText => _embedder.errorText;
+
+    @override
+    int get errorCode => _embedder.errorCode;
 
     final StreamController<VideoPlayerEvent> _statusChangeEvents;
     @override
@@ -186,8 +188,8 @@ class YouTubeEmbedder {
     VideoPlayerStatus get stateChangeStatus => _status;
     int _errorCode = 0;
     int get errorCode => _errorCode;
-    String _error = null;
-    String get error => _error;
+    String _errorText = null;
+    String get errorText => _errorText;
 
 
     JsObject get youTubePlayer => _youTubePlayer;
@@ -261,7 +263,7 @@ class YouTubeEmbedder {
                     VideoPlayerStatus status = convertState(state);
                     if (status != null) {
                         // No longer in an error state
-                        _error = null;
+                        _errorText = null;
                         _errorCode = 0;
                         events.add(new VideoPlayerEvent(_instance,
                                 new DateTime.now(), status));
@@ -275,15 +277,15 @@ class YouTubeEmbedder {
 
                 context["${playerId}_onError"] = (int errCode) {
                     _errorCode = errCode;
-                    _error = _convertError(errCode);
+                    _errorText = _convertError(errCode);
 
                     // DEBUG
                     //print("YT error ${errCode} (${error})");
 
-                    if (_error != null) {
+                    if (_errorText != null) {
                         events.add(new VideoPlayerEvent(_instance,
                                 new DateTime.now(), VideoPlayerStatus.ERROR,
-                                _error, errCode));
+                                _errorText, errCode));
                     }
                 };
                 _youTubePlayer.callMethod('addEventListener',
