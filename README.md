@@ -36,6 +36,11 @@ create these and set various parameters.  For now, though, you only need to
 worry about directly referencing the YouTube factory.
 
 
+### Examples
+
+Check out the [examples](example/README.md) for the library in practice.
+
+
 ### YouTube
 
 The YouTube player requires having a `<div>` in your webpage that will house
