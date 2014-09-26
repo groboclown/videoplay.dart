@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiple Videos - videoplay.dart example</title>
+    <style>
+        #video_set_list div {
+            background: lightgray;
+            border: 2px solid darkgray;
+            border-radius: .5em;
+            margin: 0.2em;
+            padding: 0.2em;
+        }
+    </style>
+  </head>
+
+  <body>
+    <div>
+        <label for="video_id_field">Select a video:</label>
+        <select id="video_type">
+            <option value="youtube" selected>youtu.be/</option>
+            <option value="html5">(video file)</option>
+        </select>&nbsp;
+        <input type="text" id="video_id_field" length="30" value="tlcWiP7OLFI">
+        <button id="add_video">Add</button>
+    </div>
+    
+    <div id="video_set_list">
+    </div>
+    
+    <script type="application/dart" src="main.dart"></script>
+    <script src="packages/browser/dart.js"></script>
+  </body>
+</html>

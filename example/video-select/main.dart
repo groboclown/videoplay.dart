@@ -3,7 +3,6 @@ library videoplay_example;
 
 
 import 'dart:html';
-import 'dart:async';
 
 import 'package:videoplay/videoplay.dart';
 
@@ -30,6 +29,22 @@ void main() {
         });
 
     videoId.onChange.listen(changeVideo);
+
+    querySelector("#play_video").onClick.listen((_) {
+        if (videoPlayer != null) {
+            videoPlayer.play();
+        }
+    });
+    querySelector("#pause_video").onClick.listen((_) {
+        if (videoPlayer != null) {
+            videoPlayer.pause();
+        }
+    });
+    querySelector("#stop_video").onClick.listen((_) {
+        if (videoPlayer != null) {
+            videoPlayer.stop();
+        }
+    });
 }
 
 
