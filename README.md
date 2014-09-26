@@ -13,10 +13,12 @@ Right now, it supports:
 
 * Flash-based [YouTube videos](https://developers.google.com/youtube/js_api_reference)
 
-Version 0.2.0 is planned to support HTML 5 videos.
+Version 0.2.0 plans to support HTML 5 videos.
 
 
 ## Usage
+
+Full documentation can be found under [doc/README.md](doc/README.md).
 
 To add the library to your project, add it as a dependency to your
 `pubspec.yaml` file:
@@ -24,7 +26,7 @@ To add the library to your project, add it as a dependency to your
     name: VideoWatcher
     version: 1.2.3
     dependencies:
-        videoplay: '>=0.1.0 <1.0.0'
+        videoplay: '>=0.1.1 <1.0.0'
 
 then install with `pub install`, followed by importing it into your application:
 
