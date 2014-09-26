@@ -101,6 +101,7 @@ class YouTubeVideoPlayer implements VideoPlayer {
 
     @override
     void destroy() {
+        _statusChangeEvents.sink.close();
         _embedder.destroy();
     }
 
