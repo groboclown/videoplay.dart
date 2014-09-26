@@ -3,8 +3,9 @@
 A video player library for Dart.  Allows for easy embedding of common video
 players into your web page.
 
-_Current stable version: 0.1.0_
+_Current stable version: 0.1.1_
 _Version under development: 0.1.1_
+
 
 
 ## Supported Video Services
@@ -14,6 +15,7 @@ Right now, it supports:
 * Flash-based [YouTube videos](https://developers.google.com/youtube/js_api_reference)
 
 Version 0.2.0 plans to support HTML 5 videos.
+
 
 
 ## Usage
@@ -128,6 +130,9 @@ You can also listen to state change events by subscribing to
 Future versions are expected to support multiple video player types.
 
 As the number of supported players grows, an auto-detect method may be added.
+
+Many of the text strings in the library are in English.  These will need to be
+localized, or at least a localization pattern will be added.
 
 
 
