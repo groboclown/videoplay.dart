@@ -1,0 +1,8 @@
+name: videoplay
+version: 0.1.0
+author: Groboclown
+description: A pub package
+homepage: https://github.com/groboclown/videoplay.dart
+environment:
+  sdk: '>=1.6.0'
+documentation: https://github.com/groboclown/videoplay.dart
