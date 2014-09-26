@@ -4,8 +4,11 @@
 library videoplay.src.videoplayer;
 
 import 'dart:async';
-import 'dart:html';
 
+
+/**
+ *
+ */
 class VideoPlayerStatus {
     static const PLAYING = const VideoPlayerStatus._("playing", true);
     static const PAUSED = const VideoPlayerStatus._("paused", false);
@@ -107,6 +110,3 @@ abstract class VideoPlayer {
      */
     void destroy();
 }
-
-
-typedef Future<VideoPlayer> EmbedVideoPlayer(Element wrappingElement);

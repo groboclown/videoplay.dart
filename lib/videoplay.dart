@@ -15,7 +15,11 @@ export 'src/videoplayer.dart' show
 export 'src/youtube/youtube.dart' show
     embedYouTubeVideoPlayer;
 
+export 'src/videoprovider.dart' show
+    VideoProviderException, VideoProviderAttributes,
+    VideoPlayerProvider;
 
-//part 'src/detect.dart';
-
+export 'src/embed.dart' show
+    embedVideo, getSupportedVideoProviders,
+    getVideoProviderByName;
 

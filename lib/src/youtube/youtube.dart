@@ -122,7 +122,6 @@ class YouTubeVideoPlayer implements VideoPlayer {
 
 
 
-// a EmbedVideoPlayer
 /**
  * Embeds the YouTube video player into the `wrappingElement`.  This player
  * will have all the native YouTube controls (called the "chrome").

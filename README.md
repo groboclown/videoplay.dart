@@ -4,7 +4,8 @@ A video player library for Dart.  Allows for easy embedding of common video
 players into your web page.
 
 _Current stable version: 0.1.1_
-_Version under development: 0.1.1_
+
+_Version under development: 0.2.0_
 
 
 
