@@ -7,23 +7,30 @@ import 'dart:async';
 import 'dart:html';
 
 class VideoPlayerStatus {
-    static const PLAYING = const VideoPlayerStatus._(true);
-    static const PAUSED = const VideoPlayerStatus._(false);
-    static const BUFFERING = const VideoPlayerStatus._(false);
-    static const ENDED = const VideoPlayerStatus._(false);
-    static const NOT_INITIALIZED = const VideoPlayerStatus._(false);
-    static const NOT_STARTED = const VideoPlayerStatus._(false);
-    static const ERROR = const VideoPlayerStatus._(false);
+    static const PLAYING = const VideoPlayerStatus._("playing", true);
+    static const PAUSED = const VideoPlayerStatus._("paused", false);
+    static const BUFFERING = const VideoPlayerStatus._("buffering", false);
+    static const ENDED = const VideoPlayerStatus._("ended", false);
+    static const NOT_INITIALIZED = const VideoPlayerStatus._(
+            "not initiated", false);
+    static const NOT_STARTED = const VideoPlayerStatus._("not started", false);
+    static const ERROR = const VideoPlayerStatus._("error", false);
 
     static get values => [ PLAYING, PAUSED, BUFFERING, ENDED,
                            NOT_INITIALIZED, NOT_STARTED, ERROR ];
 
+    final String name;
     final bool playing;
     final bool waiting;
 
-    const VideoPlayerStatus._(bool play) :
+    const VideoPlayerStatus._(this.name, bool play) :
         playing = play,
         waiting = ! play;
+
+    @override
+    String toString() {
+        return name;
+    }
 }
 
 
@@ -32,8 +39,11 @@ class VideoPlayerEvent {
     final VideoPlayer videoPlayer;
     final DateTime when;
     final VideoPlayerStatus status;
+    final String errorText;
+    final int errorCode;
 
-    VideoPlayerEvent(this.videoPlayer, this.when, this.status);
+    VideoPlayerEvent(this.videoPlayer, this.when, this.status,
+            [ this.errorText = null, this.errorCode = 0 ]);
 }
 
 

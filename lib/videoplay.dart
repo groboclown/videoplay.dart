@@ -10,7 +10,7 @@ library videoplay;
 
 
 export 'src/videoplayer.dart' show
-    VideoPlayer;
+    VideoPlayer, VideoPlayerEvent, VideoPlayerStatus;
 
 export 'src/youtube/youtube.dart' show
     embedYouTubeVideoPlayer;

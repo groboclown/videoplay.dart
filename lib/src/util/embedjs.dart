@@ -21,7 +21,7 @@ void embedJsScript(String uri) {
     }
 
     var script = new ScriptElement();
-    script.type = "application/javascript";
+    script.type = "text/javascript";
     script.src = uri;
     document.body.append(script);
 }
@@ -98,6 +98,7 @@ Future<JsObject> embedJsScriptObject(String uri, String jsObjectName,
             return;
         }
         if (++checkedCount > maxCheckIterations) {
+            t.cancel();
             ret.completeError(new NoSuchJsObjectFound(uri, jsObjectName));
         }
     });

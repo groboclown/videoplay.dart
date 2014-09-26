@@ -12,7 +12,7 @@ import '../videoplayer.dart';
 
 // Based upon https://developers.google.com/youtube/js_api_reference
 
-const String DEFAULT_SWFOBJECT_LOCATION = "js/swfobject.js";
+const String DEFAULT_SWFOBJECT_LOCATION = "packages/videoplay/js/swfobject.js";
 const String DEFAULT_SWFOBJECT_NAME = "swfobject";
 
 /**
@@ -72,6 +72,8 @@ class YouTubeVideoPlayer implements VideoPlayer {
     @override
     void loadVideo(String videoId) {
         _videoId = videoId;
+        // DEBUG
+        //print("loading the video ${videoId}");
         _embedder.youTubePlayer.callMethod('loadVideoById', [ videoId ]);
     }
 
@@ -195,6 +197,9 @@ class YouTubeEmbedder {
             int width, int height) {
         String playerId = '__YOUTUBE__' +
                 _YOUTUBE_PLAYERID_OBJECT_MAP.length.toString();
+        if (! context.hasProperty('onYouTubePlayerReady')) {
+            context['onYouTubePlayerReady'] = YouTubePlayerReady;
+        }
         YouTubeEmbedder ret = new YouTubeEmbedder._(player,
                 youTubePlayerWrappingObject, swfScriptUri, swfObjName,
                 initialVideoId, width, height, playerId);
@@ -206,10 +211,6 @@ class YouTubeEmbedder {
             String swfScriptUri, String swfObjName, this.initialVideoId,
             int width, int height, this.playerId) {
 
-        if (! context.hasProperty('onYouTubePlayerReady')) {
-            context['onYouTubePlayerReady'] = YouTubePlayerReady;
-        }
-
         // Create the inner object that the SWFObject will replace.  This
         // gives us control to find the object later via the parent.
         DivElement element = new DivElement();
@@ -218,7 +219,7 @@ class YouTubeEmbedder {
             var params = <String, String>{ 'allowScriptAccess': "always" };
             var atts = <String, String>{ 'id': playerId };
             var vidUrl = initialVideoId == null ? "" : initialVideoId;
-            var url = "http://www.youtube.com/v/${vidUrl}?enablejsapi=1&playerapiid=ytplayer&version=3";
+            var url = "http://www.youtube.com/v/${vidUrl}?enablejsapi=1&playerapiid=${playerId}&version=3";
 
             //print("Youtube player url: " + url);
 
@@ -237,18 +238,25 @@ class YouTubeEmbedder {
 
 
     void onYouTubePlayerReady() {
+        // DEBUG
+        //print("player ${playerId} ready");
+
         // Find the embedded object.  Because we may be in a shadow DOM,
         // we need to just ask the parent wrapping object.
         for (Element el in youTubePlayerWrappingObject.children) {
             if (el.attributes.containsKey('id') &&
-                    el.attributes['id'] == playerId) {
+                    el.getAttribute('id') == playerId) {
+                // DEBUG
+                //print("- found its html object");
+
                 _youTubeElement = el;
                 _youTubePlayer = new JsObject.fromBrowserObject(el);
 
                 StreamController<VideoPlayerEvent> events =
                         new StreamController<VideoPlayerEvent>.broadcast();
                 context["${playerId}_onStateChange"] = (int state) {
-                    // FIXME set status
+                    // DEBUG
+                    //print("YT state changed to ${state}");
                     VideoPlayerStatus status = convertState(state);
                     if (status != null) {
                         // No longer in an error state
@@ -265,12 +273,16 @@ class YouTubeEmbedder {
                 // onPlaybackRateChange - ignore
 
                 context["${playerId}_onError"] = (int errCode) {
-                    // FIXME set error state
                     _errorCode = errCode;
                     _error = _convertError(errCode);
+
+                    // DEBUG
+                    //print("YT error ${errCode} (${error})");
+
                     if (_error != null) {
                         events.add(new VideoPlayerEvent(_instance,
-                                new DateTime.now(), VideoPlayerStatus.ERROR));
+                                new DateTime.now(), VideoPlayerStatus.ERROR,
+                                _error, errCode));
                     }
                 };
                 _youTubePlayer.callMethod('addEventListener',
@@ -345,9 +357,12 @@ class YouTubeEmbedder {
 
 // Called by the SWFObject when any player finishes loading.
 void YouTubePlayerReady(String playerId) {
+    // DEBUG
+    //print("Called the onYouTubeReady function");
     YouTubeEmbedder emb = YouTubeEmbedder.findEmbedderForPlayerId(playerId);
     if (emb == null) {
-        throw new Exception("No such player id: " + playerId);
+        print("No such player id ${playerId}");
+        throw new Exception("No such player id: ${playerId}");
     }
 
     emb.onYouTubePlayerReady();

@@ -37,10 +37,6 @@ the player:
     (index.html)
     <!DOCTYPE html>
     <html>
-      <head>
-        <script src="packages/web_components/platform.js"></script>
-        <script src="packages/web_components/dart_support.js"></script>
-      </head>
     <body>
       <p>Here's my video:</p>
       <div id="video_container"></div>
@@ -56,6 +52,7 @@ From here, it's easy to embed the player.  You need to know how to find the
     library VideoWatcher;
     
     import 'dart:html';
+    import 'package:videoplay/videoplay.dart';
     
     void main() {
         var div = document.querySelector("#video_container");
@@ -70,9 +67,9 @@ embedded.
 
 This particular video player requires adding the custom `swfobject.js` file
 into your web site that's supplied with `videoplayer.dart`.  The embed
-function expects it to be located at `js/swfobject.js`, but if you need it
-to be in another location, you can specify it with the additional named
-argument `swfObjectSrcLocation`.
+function expects it to be located at `packages/videoplay/js/swfobject.js`,
+but if you need it to be in another location, you can specify it with the
+additional named argument `swfObjectSrcLocation`.
 
 
 ## The Future

@@ -6,3 +6,5 @@ homepage: https://github.com/groboclown/videoplay.dart
 environment:
   sdk: '>=1.6.0'
 documentation: https://github.com/groboclown/videoplay.dart
+dependencies:
+  browser: any
