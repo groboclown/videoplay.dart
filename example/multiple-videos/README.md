@@ -6,13 +6,7 @@ video players, all of which can be controlled separately.
 The code uses a class, `EmbeddedVideoDom`, to encapsulate the logic for managing
 the DOM elements for a single video player.
 
+This uses the centralized video provider repository to dynamically populate the
+list of supported video types, and to embed the correct video player based
+on the selected provider.
 
-
-## Future Notes
-
-In the future (v0.2.0), we expect the `videoplay.dart` library to support
-the indirection presented in this example around the discovery and creation
-of the `VideoPlayer` object.
-
-When this happens, the `Embedder` typedef and the `getEmbedder` discovery
-function should be removed in favor of the new discovery mechanism.

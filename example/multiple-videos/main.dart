@@ -3,7 +3,6 @@ library videoplay_example;
 
 
 import 'dart:html';
-import 'dart:async';
 
 import 'package:videoplay/videoplay.dart';
 
@@ -16,23 +15,29 @@ void main() {
     videoType = querySelector("#video_type");
     videoList = querySelector("#video_set_list");
 
+    for (VideoPlayerProvider provider in getSupportedVideoProviders()) {
+        var oel = new OptionElement();
+        oel.value = provider.name;
+        oel.text = provider.toString();
+        videoType.children.add(oel);
+    }
+
     ButtonElement add = querySelector("#add_video");
     add.onClick.listen((_) {
         String vtype = videoType.options[videoType.selectedIndex].value;
-        new EmbeddedVideoDom(vtype, videoId.value, getEmbedder(vtype));
+        VideoPlayerProvider provider = getVideoProviderByName(vtype);
+        new EmbeddedVideoDom(provider, videoId.value);
     });
 }
 
-typedef Future<VideoPlayer> Embedder(DivElement wrapper, String videoId);
-
 class EmbeddedVideoDom {
-    final String videoType;
+    final VideoPlayerProvider videoType;
     final String videoId;
     DivElement wrapper;
     ParagraphElement status;
     VideoPlayer player;
 
-    EmbeddedVideoDom(this.videoType, this.videoId, Embedder embedder) {
+    EmbeddedVideoDom(this.videoType, this.videoId) {
         wrapper = new DivElement();
         var p = new ParagraphElement();
         p.text = "${videoId} - ${videoType}";
@@ -51,20 +56,25 @@ class EmbeddedVideoDom {
 
         videoList.children.add(wrapper);
 
-        embedder(wrapper, videoId).then((VideoPlayer videoPlayer) {
-            player = videoPlayer;
-            status.text = videoPlayer.status.toString();
-            print("Player ${videoId}/${videoType} loaded");
+        VideoProviderAttributes attributes = videoType.createAttributes();
+        attributes.height = 320;
+        attributes.width = 200;
 
-            // Add an event listener
-            player.statusChangeEvents.listen((VideoPlayerEvent e) {
-                if (e.errorText != null) {
-                    status.text = "Error: ${e.errorText}";
-                } else {
-                    status.text = e.status.toString();
-                }
+        embedVideo(videoType, wrapper, videoId, attributes)
+            .then((VideoPlayer videoPlayer) {
+                player = videoPlayer;
+                status.text = videoPlayer.status.toString();
+                print("Player ${videoId}/${videoType} loaded");
+
+                // Add an event listener
+                player.statusChangeEvents.listen((VideoPlayerEvent e) {
+                    if (e.errorText != null) {
+                        status.text = "Error: ${e.errorText}";
+                    } else {
+                        status.text = e.status.toString();
+                    }
+                });
             });
-        });
     }
 
     void close() {
@@ -79,21 +89,3 @@ class EmbeddedVideoDom {
         }
     }
 }
-
-
-Embedder getEmbedder(String videoType) {
-    switch (videoType) {
-        case 'youtube':
-            return (DivElement wrapper, String videoId) {
-                return embedYouTubeVideoPlayer(wrapper, videoId,
-                    // Make it as big as the video allows
-                    width: 640, height: 480);
-            };
-        case 'html5':
-            window.alert("HTML 5 video not supported yet");
-            throw new Exception("HTML 5 video not supported yet");
-        default:
-            throw new Exception("unknown video type ${videoType}");
-    }
-}
-
