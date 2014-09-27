@@ -1,7 +1,10 @@
 # Using HTML 5 Video With `videoplay.dart`
 
-_TODO need a better description._
+With HTML 5, browsers can natively support the playback of video files.  The
+html5 video provider gives the `videoplay.dart` library support to show and
+control those videos.
 
+_TODO need a deeper description._
 
 
 ## Notes on sources and encodings
@@ -25,3 +28,6 @@ video file on the Internet, so it will try to add all supported video file
 variations.  This seems to work well even in the situations where you have
 hosted files with a limited subset of extensions, and you use URIs without
 an extension.
+
+_TODO show how to set this up.  For now, you can look at the Dart code
+documentation in `lib/html5.dart`._

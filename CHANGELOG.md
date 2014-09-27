@@ -14,7 +14,8 @@ to use the new architecture are fairly limited.
   isn't imported by default anymore.
 * `embedYouTubeVideoPlayer` is no more.  Users of the library must switch to
   either the provider depot, or the direct loading.  The front page
-  [README.md](README.md) explains how to do this.
+  [README.md](README.md) explains how to do this.  This is because of the
+  move to a standardized approach to video provider setup.
 * Added centralized embedding.
     * Added the `videoprovider.dart` file to contain classes and typedefs
       required to support a single embedding source.
@@ -37,6 +38,7 @@ to use the new architecture are fairly limited.
     * Changed the multiple-videos example to use the new centralized embedding
       infrastructure.
     * Fixed up the documentation to reflect the new usage.
+* Added HTML 5 video support.
 
 
 ## 0.1.1
