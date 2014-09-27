@@ -2,7 +2,7 @@
 // can be found in the LICENSE file.
 
 /**
- * Provides
+ * Provides support for adding YouTube videos.
  */
 library videoplay.youtube;
 
@@ -57,6 +57,9 @@ Future<VideoPlayer> embedYouTube(Element wrappingElement,
             "YouTube videos are not supported on this browser");
     }
 
+    if (attributes == null) {
+        attributes = new YouTubeAttributes();
+    }
 
     if (! (attributes is YouTubeAttributes)) {
         throw new VideoProviderException(

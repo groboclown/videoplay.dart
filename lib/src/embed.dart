@@ -11,6 +11,7 @@ import 'videoprovider.dart';
 
 // For initializing with known video providers
 import '../youtube.dart';
+import '../html5.dart';
 
 
 typedef Future<VideoPlayer> EmbedVideoPlayer(Element wrappingElement,
@@ -105,6 +106,13 @@ void initializeProviders() {
             registerVideoProvider(
                 new YouTubeProvider(),
                 embedYouTube);
+        }
+
+        // HTML 5 provider
+        if (isHtml5Supported()) {
+            registerVideoProvider(
+                new Html5Provider(),
+                embedHtml5);
         }
     }
 }
