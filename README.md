@@ -111,7 +111,7 @@ of which provider was chosen.
             });
         });
 
-You can see a site using just the YouTube video provider in the
+You can see a site using all the video providers in the
 [multiple-videos](example/multiple-videos) example.
 
 
