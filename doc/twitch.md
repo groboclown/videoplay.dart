@@ -1,14 +1,12 @@
-# Using Vimeo Embedded Video With `videoplay.dart`
+# Using Twitch Embedded Video With `videoplay.dart`
 
 
+Twitch video IDs are the video URLs.  However, the actual video ID is a bit
+different, So, if the url is "/smitegame/c/5183949", then the actual video
+ID is `c5183949`.  The Twitch provider automatically converts the ID.
 
-_TODO add notes as they are discovered._
+The embedder only supports videos right now, not streams.
 
-
-## Notes on the implementation
-
-This uses the Flash player, rather than the iframe version, because it
-doesn't suffer the same drawbacks.  The iframe version uses a message posting
-technique, which means that query requests would need to be in the
-form of `Future` return values, which simply aren't practical.  The flash
-version avoids that.
+The status updates from Twitch are pretty limited.  The event stream isn't good.
+Future versions may need to have a timer to check the state and send event
+stream updates.
