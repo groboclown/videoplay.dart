@@ -1,13 +1,27 @@
 # Change History for videoplay.dart
 
+## 0.2.1 (unreleased)
+
+**::Overview::**
+
+Minor bug fixes.
+
+**::Details::**
+
+* Bug fixes:
+    * (none yet)
+* Minor cleanup of the CHANGELOG.md.
+
 ## 0.2.0
 
-*Overview* Added HTML 5 video support and a common entry point for embedding
+**::Overview::**
+
+Added HTML 5 video support and a common entry point for embedding
 a video.  There was a major backwards compatibility change over the 0.1 line
 where the way YouTube videos are embedded has changed, though the changes needed
 to use the new architecture are fairly limited.
 
-*Details:*
+**::Details::**
 
 * The user has two ways to use the library, either directly referencing the
   video providers, or using the provider repository.  The YouTube provider
@@ -43,10 +57,11 @@ to use the new architecture are fairly limited.
 
 ## 0.1.1
 
-*Overview* Updates to the documentation and examples, along with a few bug
-fixes.
+**::Overview::**
 
-*Details:*
+Updates to the documentation and examples, along with a few bug fixes.
+
+**::Details::**
 
 * Bug fixes:
     * YouTube player does not shut down its event log on `destroy()`.
@@ -69,6 +84,8 @@ fixes.
 
 ## 0.1.0
 
-*Overview* Initial public release.  This was originally in the
+**::Overview::**
+
+Initial public release.  This was originally in the
 [WebRiffs](https://github.com/groboclown/webriffs) project, but it was moved
 over here to be a proper stand-alone library.  Supports only YouTube videos.
