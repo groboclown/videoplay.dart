@@ -5,7 +5,9 @@ players into your web page.
 
 _Current stable version: 0.1.1_
 
-_Version under development: 0.2.0_
+_Version under development: 0.2.0.  There are some minor backwards incompatible
+changes with this version, so, if you were using the 0.1 releases, read the
+[CHANGELOG.md](CHANGELOG.md) for details ._
 
 
 
@@ -26,111 +28,99 @@ Full documentation can be found under [doc/README.md](doc/README.md).
 To add the library to your project, add it as a dependency to your
 `pubspec.yaml` file:
 
-    name: VideoWatcher
+    name: MyVideoWatcherSite
     version: 1.2.3
     dependencies:
         videoplay: '>=0.2.0 <1.0.0'
 
-then install with `pub install`, followed by importing it into your application:
+then use `pub` to install the library.
 
-    import 'package:videoplay/videoplay.dart';
-
-Currently, the only supported video player type is the YouTube embedded flash
-player.  When more players are supported, there will be a standardized way to
-create these and set various parameters.  For now, though, you only need to
-worry about directly referencing the YouTube factory.
+There are two ways to use the library in your code.  You can use the dynamic
+support for video providers to allow the end user to select the videos, or
+you can explicitly reference the video providers you want to use.
 
 
-### Examples
+### You know the video providers
 
-Check out the [examples](example/README.md) for the library in practice.
+Your site is limited to a few video providers, and you know where to use
+that specific provider.
+
+Your code should import the videoplay API and the provider libraries:
+
+    import 'package:videoplay/api.dart';
+    import 'package:videoplay/youtube.dart';
+
+You can then use the video provider explicitly:
+
+    var videoDiv = querySelector("#youtube_video_container");
+    YouTubeAttributes attr = new YouTubeAttributes();
+    attr.width = 640;
+    attr.height = 480;
+    embedYouTube(videoDiv, "tlcWiP7OLFI", attr)
+        .then((VideoPlayer player) {
+            ytVideoPlayer = player;
+            player.statusChangeEvents.listen(onVideoStatusChange);
+        });
+
+You can see a site using just the YouTube video provider in the
+[video-select](example/video-select) example.
 
 
-### YouTube
+### Flexible and extensible video providers
 
-The YouTube player requires having a `<div>` in your webpage that will house
-the player:
+If you want to let the end users select from a list of video providers, then
+the provider depot is the way to go.  It allows for detection of which
+video providers the user's browser supports, and for the site to expand the
+number of video providers as the library adds support for them.
 
-    (index.html)
-    <!DOCTYPE html>
-    <html>
-    <body>
-      <p>Here's my video:</p>
-      <div id="video_container"></div>
-      
-      <script type="application/dart" src="main.dart"></script>
-      <script type="text/javascript" src="packages/browser/dart.js"></script>
-    </body>
+Your code imports the provider depot library:
 
-From here, it's easy to embed the player.  You need to know how to find the
-`<div>` container, and pass that to the `embedYouTubeVideoPlayer` function:
+    import 'package:videoplay/depot.dart';
 
-    (main.dart)
-    library VideoWatcher;
-    
-    import 'dart:html';
-    import 'package:videoplay/videoplay.dart';
-    
-    void main() {
-        var div = document.querySelector("#video_container");
-        embedYouTubeVideoPlayer(div, "tlcWiP7OLFI",
-            // Make it as big as the video allows
-            width: 640, height: 480);
+You can dynamically create a list of the supported providers for the end user:
+
+    var videoType = querySelector("#video-type");
+    for (VideoPlayerProvider provider in getSupportedVideoProviders()) {
+        var oel = new OptionElement();
+        oel.value = provider.name;
+        oel.text = provider.toString();
+        videoType.children.add(oel);
     }
 
-The `embedYouTubeVideoPlayer` function returns a `Future<VideoPlayer>`, so
-you can begin interacting with the player in your code once it's become
-embedded.
+When the end user selects a video provider, you can easily embed it, regardless
+of which provider was chosen.
 
-This particular video player requires adding the custom `swfobject.js` file
-into your web site that's supplied with `videoplayer.dart`.  The embed
-function expects it to be located at `packages/videoplay/js/swfobject.js`,
-but if you need it to be in another location, you can specify it with the
-additional named argument `swfObjectSrcLocation`.
+    String vtype = videoType.options[videoType.selectedIndex].value;
+    String videoId = querySelector("#video-id").value;
+    VideoPlayerProvider provider = getVideoProviderByName(vtype);
+    VideoProviderAttributes attributes = videoType.createAttributes();
+    attributes.width = 320;
+    attributes.height = 200;
+    var wrapper = querySelector("#video-wrapper");
+    embedVideo(videoType, wrapper, videoId, attributes)
+        .then((VideoPlayer videoPlayer) {
+            player = videoPlayer;
+            player.statusChangeEvents.listen((VideoPlayerEvent e) {
+                if (e.errorText != null) {
+                    status.text = "Error: ${e.errorText}";
+                }
+            });
+        });
+
+You can see a site using just the YouTube video provider in the
+[multiple-videos](example/multiple-videos) example.
 
 
-### Common API
 
-_NOTE: as more video players are added, different capabilities are expected
-to become available, and existing ones may not be available on them.  This
-list is expected to expand, but not shrink._
+## Examples
 
-With the `VideoPlayer` object that the `embedYouTubeVideoPlayer` function
-returns (and other embedders in the future), you have query different aspects
-of it:
-
-* `hasVideo` - does the player have a video that it can play?
-* `playbackTime` - the current time position in the video playback.
-* `videoDuration` - the video length.
-* `status` - returns an object that gives some indication about the current
-   state of the video: PLAYING, PAUSED, BUFFERING, ENDED, NOT\_INITIALIZED,
-   NOT\_STARTED, and ERROR.
-* `percentVideoLoaded` - a value between 0 and 100 to indicate how much of the
-   video the player has loaded.  It's not a full picture of the buffer, but
-   it gives the program a rough estimate.
-* `error` - the current error message.
-* `videoId` - the currently loaded video ID.
-
-You also have limited control over the player:
-
-* `loadVideo(String videoId)` - load a new video with the given ID.
-* `play()` - play the current video.
-* `pause()` - pause the video.
-* `stop()` - stop the video.
-* `seekTo(Duration time)` - skip to the given position in the video.
-* `destroy()` - remove the player from the DOM and properly clean itself up.
-    After this is called, the player can no longer be used.
-
-You can also listen to state change events by subscribing to
-`statusChangeEvents`.
+Check out the [examples](example/README.md) for the library in practice.
 
 
 
 ## The Future
 
-Future versions are expected to support multiple video player types.
-
-As the number of supported players grows, an auto-detect method may be added.
+Future versions are expected to support more video player types.
 
 Many of the text strings in the library are in English.  These will need to be
 localized, or at least a localization pattern will be added.

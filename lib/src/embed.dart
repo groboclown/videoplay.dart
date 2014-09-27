@@ -5,11 +5,16 @@ library videoplay.src.embed;
 
 import 'dart:async';
 import 'dart:html';
+
 import 'videoplayer.dart';
 import 'videoprovider.dart';
 
 // For initializing with known video providers
-import 'youtube/provider.dart';
+import '../youtube.dart';
+
+
+typedef Future<VideoPlayer> EmbedVideoPlayer(Element wrappingElement,
+    String videoId, VideoProviderAttributes attributes);
 
 
 /**
@@ -87,6 +92,9 @@ void registerVideoProvider(VideoPlayerProvider provider,
 
 /**
  * Internal initialization of the built-in video providers.
+ *
+ * All built-in video providers need to add themselves into this method in
+ * order to be part of the automatic detection.
  */
 void initializeProviders() {
     if (SUPPORTED_VIDEO_PLAYERS == null) {

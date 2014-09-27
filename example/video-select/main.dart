@@ -1,10 +1,13 @@
+// Use of this source code is governed by the Creative Commons-0 license that
+// can be found in the LICENSE file.
 
 library videoplay_example;
 
 
 import 'dart:html';
 
-import 'package:videoplay/videoplay.dart';
+import 'package:videoplay/api.dart';
+import 'package:videoplay/youtube.dart';
 
 VideoPlayer videoPlayer;
 DivElement errorDiv;
@@ -15,11 +18,12 @@ void main() {
     errorDiv = querySelector("#video_error");
 
     var videoDiv = querySelector("#youtube_video_container");
-    embedYouTubeVideoPlayer(videoDiv, "tlcWiP7OLFI",
-        // Make it as big as the video allows
-        width: 640, height: 480)
+    YouTubeAttributes attr = new YouTubeAttributes();
+    attr.width = 640;
+    attr.height = 480;
+    embedYouTube(videoDiv, "tlcWiP7OLFI", attr)
 
-        // Once the player object is instantiated, perform some actions.
+        // Finish initialization once the player object is loaded
         .then((VideoPlayer player) {
             videoPlayer = player;
             print("Player loaded");

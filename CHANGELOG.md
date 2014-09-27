@@ -3,10 +3,18 @@
 ## 0.2.0
 
 *Overview* Added HTML 5 video support and a common entry point for embedding
-a video.
+a video.  There was a major backwards compatibility change over the 0.1 line
+where the way YouTube videos are embedded has changed, though the changes needed
+to use the new architecture are fairly limited.
 
 *Details:*
 
+* The user has two ways to use the library, either directly referencing the
+  video providers, or using the provider repository.  The YouTube provider
+  isn't imported by default anymore.
+* `embedYouTubeVideoPlayer` is no more.  Users of the library must switch to
+  either the provider depot, or the direct loading.  The front page
+  [README.md](README.md) explains how to do this.
 * Added centralized embedding.
     * Added the `videoprovider.dart` file to contain classes and typedefs
       required to support a single embedding source.
@@ -28,6 +36,8 @@ a video.
         * `registerVideoProvider` - (internal) add a provider to the registry.
     * Changed the multiple-videos example to use the new centralized embedding
       infrastructure.
+    * Fixed up the documentation to reflect the new usage.
+
 
 ## 0.1.1
 

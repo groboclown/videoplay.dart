@@ -3,10 +3,6 @@
 
 library videoplay.src.videoprovider;
 
-import 'dart:html';
-import 'dart:async';
-
-import 'videoplayer.dart';
 
 class VideoProviderException implements Exception {
     final String message;
@@ -33,7 +29,7 @@ class VideoProviderAttributes {
 
 /**
  * Describes a video player provider.  These are stored in the central
- * embed repository so the user can query for what players are supported by
+ * provider depot so the user can query for what players are supported by
  * the browser and library version.
  */
 abstract class VideoPlayerProvider {
@@ -48,8 +44,3 @@ abstract class VideoPlayerProvider {
     VideoProviderAttributes createAttributes();
 }
 
-
-
-
-typedef Future<VideoPlayer> EmbedVideoPlayer(Element wrappingElement,
-    String videoId, VideoProviderAttributes attributes);

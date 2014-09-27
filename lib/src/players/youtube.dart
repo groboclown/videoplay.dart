@@ -1,7 +1,10 @@
 // Use of this source code is governed by the Creative Commons-0 license that
 // can be found in the LICENSE file.
 
-library videoplay.src.youtube;
+/**
+ * Internal implementation of the YouTube embedding and management.
+ */
+library videoplay.src.players.youtube;
 
 import 'dart:async';
 import 'dart:html';

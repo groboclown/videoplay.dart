@@ -1,16 +1,18 @@
 // Use of this source code is governed by the Creative Commons-0 license that
 // can be found in the LICENSE file.
 
-library videoplay.src.youtube.provider;
+/**
+ * Provides
+ */
+library videoplay.youtube;
 
 import 'dart:async';
 import 'dart:html';
 
-import 'youtube.dart';
+import 'src/players/youtube.dart';
 
-import '../videoprovider.dart';
-import '../videoplayer.dart';
-
+import 'src/videoprovider.dart';
+import 'src/videoplayer.dart';
 
 
 class YouTubeAttributes extends VideoProviderAttributes {
@@ -50,9 +52,15 @@ bool isYouTubeSupported() {
 // a EmbedVideoPlayer
 Future<VideoPlayer> embedYouTube(Element wrappingElement,
         String videoId, YouTubeAttributes attributes) {
+    if (! isYouTubeSupported()) {
+        throw new VideoProviderException(
+            "YouTube videos are not supported on this browser");
+    }
+
+
     if (! (attributes is YouTubeAttributes)) {
         throw new VideoProviderException(
-                "Invalid attribute type: ${attributes}");
+            "Invalid attribute type: ${attributes}");
     }
 
     return embedYouTubeVideoPlayer(wrappingElement,

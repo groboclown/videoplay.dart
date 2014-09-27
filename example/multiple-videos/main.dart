@@ -1,10 +1,12 @@
+// Use of this source code is governed by the Creative Commons-0 license that
+// can be found in the LICENSE file.
 
 library videoplay_example;
 
 
 import 'dart:html';
 
-import 'package:videoplay/videoplay.dart';
+import 'package:videoplay/depot.dart';
 
 InputElement videoId;
 SelectElement videoType;
@@ -57,8 +59,8 @@ class EmbeddedVideoDom {
         videoList.children.add(wrapper);
 
         VideoProviderAttributes attributes = videoType.createAttributes();
-        attributes.height = 320;
-        attributes.width = 200;
+        attributes.width = 320;
+        attributes.height = 200;
 
         embedVideo(videoType, wrapper, videoId, attributes)
             .then((VideoPlayer videoPlayer) {

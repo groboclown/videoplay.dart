@@ -12,6 +12,6 @@ For most uses, it's sufficient to
 
 Each kind of video player has its own documentation on how to use it:
 
- * [YouTube](youtube.md)
- * [HTML 5](html5.md)
- * [Extending](extend.md)
+* [YouTube](youtube.md)
+* [HTML 5](html5.md)
+* [Create your own provider](extend.md)
