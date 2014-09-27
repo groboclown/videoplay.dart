@@ -218,6 +218,12 @@ class YouTubeEmbedder {
     YouTubeEmbedder._(this.player, this.youTubePlayerWrappingObject,
             String swfScriptUri, String swfObjName, this.initialVideoId,
             int width, int height, this.playerId) {
+        if (swfScriptUri == null) {
+            swfScriptUri = DEFAULT_SWFOBJECT_LOCATION;
+        }
+        if (swfObjName == null) {
+            swfObjName = DEFAULT_SWFOBJECT_NAME;
+        }
 
         // Create the inner object that the SWFObject will replace.  This
         // gives us control to find the object later via the parent.

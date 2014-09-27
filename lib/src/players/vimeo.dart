@@ -71,6 +71,8 @@ class VimeoVideoPlayer implements VideoPlayer {
 
         _videoId = videoId;
 
+        // FIXME save off the original factory settings?
+
         createSwfObjectFactory(
                 // FIXME
                 //swfScriptUri: swfObjectSrcLocation,
