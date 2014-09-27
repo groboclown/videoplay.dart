@@ -19,23 +19,96 @@ Followed by updating your dependencies:
 
     $ pub update
 
-Then you can import the library into your Dart sources:
-
-    import 'package:videoplay/videoplay.dart';
-
 
 ## Embed the video
 
+
 To add the video into your web page, you need to invoke the video player
-specific function.  For the moment, only [YouTube](youtube.md) videos are
-supported.
+specific function.
 
-_FUTURE WATCH in version 0.2.0, expect this to change.  You should be able to
-use a single entry point to load each video player._
+Note that embedding the video will return a `Future<VideoPlayer>` object.
+The `Future` will complete when the `VideoPlayer` object is created, and
+the video is added into the web page.
 
-Embedding the video will return a `Future<VideoPlayer>` object.  The `Future`
-will complete when the `VideoPlayer` object is created, and the video is
-added into the web page.
+There are two ways to use the library in your code.  You can use the dynamic
+support for video providers to allow the end user to select the videos, or
+you can explicitly reference the video providers you want to use.
+
+
+### You know the video providers
+
+Your site is limited to a few video providers, and you know where to use
+that specific provider.
+
+Your code should import the videoplay API and the provider libraries:
+
+    import 'package:videoplay/api.dart';
+    import 'package:videoplay/youtube.dart';
+
+You can then use the video provider explicitly:
+
+    var videoDiv = querySelector("#youtube_video_container");
+    YouTubeAttributes attr = new YouTubeAttributes();
+    attr.width = 640;
+    attr.height = 480;
+    embedYouTube(videoDiv, "tlcWiP7OLFI", attr)
+        .then((VideoPlayer player) {
+            ytVideoPlayer = player;
+            player.statusChangeEvents.listen(onVideoStatusChange);
+        });
+
+All the standard video providers use the same general technique for loading
+the videos.  Please see the individual provider documentation to learn more
+about the nuances of loading that specific video player.
+
+You can see a site using just the YouTube video provider in the
+[video-select](../example/video-select) example.
+
+
+### Flexible and extensible video providers
+
+If you want to let the end users select from a list of video providers, then
+the provider depot is the way to go.  It allows for detection of which
+video providers the user's browser supports, and for the site to expand the
+number of video providers as the library adds support for them.
+
+Your code imports the provider depot library:
+
+    import 'package:videoplay/depot.dart';
+
+You can dynamically create a list of the supported providers for the end user:
+
+    var videoType = querySelector("#video-type");
+    for (VideoPlayerProvider provider in getSupportedVideoProviders()) {
+        var oel = new OptionElement();
+        oel.value = provider.name;
+        oel.text = provider.toString();
+        videoType.children.add(oel);
+    }
+
+When the end user selects a video provider, you can easily embed it, regardless
+of which provider was chosen.
+
+    String vtype = videoType.options[videoType.selectedIndex].value;
+    String videoId = querySelector("#video-id").value;
+    VideoPlayerProvider provider = getVideoProviderByName(vtype);
+    VideoProviderAttributes attributes = videoType.createAttributes();
+    attributes.width = 320;
+    attributes.height = 200;
+    var wrapper = querySelector("#video-wrapper");
+    embedVideo(videoType, wrapper, videoId, attributes)
+        .then((VideoPlayer videoPlayer) {
+            player = videoPlayer;
+            player.statusChangeEvents.listen((VideoPlayerEvent e) {
+                if (e.errorText != null) {
+                    status.text = "Error: ${e.errorText}";
+                }
+            });
+        });
+
+You can see a site using just the YouTube video provider in the
+[multiple-videos](../example/multiple-videos) example.
+
 
 
 ## Querying the video state
@@ -102,15 +175,23 @@ buffered blocks.  However, most video players don't offer this level of
 granularity.
 
 
-### `String error`
+### `String errorText`
 
 If the player encountered an error, then the status is set to
-`VideoPlayerState.ERROR`, and the `error` contains the error message.
+`VideoPlayerState.ERROR`, and the `errorText` contains the error message.
 
 If there is no error, then this value returns `null`.
 
 _FUTURE WATCH this value is currently in English.  This will eventually allow
-for a localized message._
+for a localized message.  For the moment, you can use the `errorCode` value._
+
+
+### `int errorCode`
+
+Returns 0 if there is no error, otherwise a provider-specific error code
+is returned.
+
+_FUTURE WATCH this value will eventually have a standardized meaning._
 
 
 ### `String videoId`

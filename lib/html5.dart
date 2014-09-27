@@ -43,7 +43,7 @@ class Html5Attributes extends VideoProviderAttributes {
      * It is highly suggested that if this is set to `true` that you also
      * set either [supportedMimeTypes] or [supportedExtensions].
      */
-    bool addExtensions = false;
+    bool tryAllExtensions = true;
 }
 
 
@@ -89,6 +89,7 @@ Future<VideoPlayer> embedHtml5(Element wrappingElement,
     var player = new Html5VideoPlayer(wrappingElement, videoId,
             supportedExtensions: attributes.supportedExtensions,
             mimeTypes: attributes.supportedMimeTypes,
+            tryExtensions: attributes.tryAllExtensions,
             width: attributes.width,
             height: attributes.height);
     return new Future<VideoPlayer>.value(player);

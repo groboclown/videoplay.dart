@@ -58,6 +58,23 @@ class Html5VideoPlayer implements VideoPlayer {
             extensions.addAll(EXTENSION_TO_MIME);
         }
         VideoElement vid = new VideoElement();
+
+        // Strip out all codecs that aren't supported
+        Map<String, String> acceptableExtensions = new Map.from(extensions);
+        for (String ext in extensions.keys) {
+            String support = vid.canPlayType(extensions[ext]);
+            if (support == null || support == '') {
+                acceptableExtensions.remove(ext);
+            } else {
+                print("Browser supports " + extensions[ext] +
+                        " (${ext}) video");
+            }
+        }
+        if (acceptableExtensions.isEmpty) {
+            throw new VideoProviderException(
+                    "Your browser does not support HTML 5 video");
+        }
+
         vid.controls = true;
         vid.autoplay = false;
         vid.loop = false;
@@ -68,7 +85,8 @@ class Html5VideoPlayer implements VideoPlayer {
             vid.height = height;
         }
         wrapper.children.add(vid);
-        var ret = new Html5VideoPlayer._(vid, extensions, tryExtensions);
+        var ret = new Html5VideoPlayer._(vid, acceptableExtensions,
+                tryExtensions);
         ret.loadVideo(videoId);
         return ret;
     }
@@ -190,26 +208,18 @@ class Html5VideoPlayer implements VideoPlayer {
             // like it.
             ext = videoFileName.substring(videoFileName.lastIndexOf('.') + 1);
 
-            if (_supportedExtensions.containsKey(ext)) {
-                // it's a valid, known extension
-                List<String> segments = new List.from(videoUri.pathSegments);
-                segments.removeLast();
-                segments.add(videoFileName.
-                        substring(0, videoFileName.lastIndexOf('.')));
-                videoWithoutExtension = videoUri.
-                        replace(pathSegments: segments).toString();
-            } else {
-                // not a known extension.  It will have the supported extensions
-                // added to the end.
-                ext = null;
-            }
+            List<String> segments = new List.from(videoUri.pathSegments);
+            segments.removeLast();
+            segments.add(videoFileName.
+                    substring(0, videoFileName.lastIndexOf('.')));
+            videoWithoutExtension = videoUri.
+                    replace(pathSegments: segments).toString();
         }
 
-        bool addedVideo = false;
         if (tryExtensions) {
             if (ext != null) {
                 // Looks like there's an extension.  Load the file without
-                // the extension to laod the video in all the supported formats.
+                // the extension to load the video in all the supported formats.
                 _addSupportedSources(videoWithoutExtension);
 
                 // we can't guarantee that the user stripped off the extension,
@@ -219,18 +229,20 @@ class Html5VideoPlayer implements VideoPlayer {
                 // safely asume that the video was given with the correct
                 // extension.
             } else {
-                addedVideo = _addSupportedSources(videoId);
+                // No extension found
+                _addSupportedSources(videoId);
             }
         } else {
             if (ext != null) {
-                addedVideo = _addSource(videoId, ext);
+                _addSource(videoId, ext);
             } else {
                 // We weren't given a file extension.  We'll have to try them
                 // all.
-                addedVideo = _addSupportedSources(videoId);
+                _addSupportedSources(videoId);
             }
         }
 
+        /*
         if (addedVideo) {
             _customError = null;
         } else {
@@ -240,25 +252,21 @@ class Html5VideoPlayer implements VideoPlayer {
                     this, new DateTime.now(), VideoPlayerStatus.ERROR,
                     errorText, errorCode));
         }
+        *
+         */
     }
 
-    bool _addSupportedSources(String basePath) {
-        bool loadedAny = false;
+    void _addSupportedSources(String basePath) {
         for (String ext in _supportedExtensions.keys) {
-            loadedAny = loadedAny || _addSource(basePath + '.' + ext, ext);
+            _addSource(basePath + '.' + ext, ext);
         }
-        return loadedAny;
     }
 
-    bool _addSource(String uri, String ext) {
-        if (_element.canPlayType(_supportedExtensions[ext]) != '') {
-            var el = new SourceElement();
-            el.src = uri;
-            el.type = _supportedExtensions[ext];
-            _element.children.add(el);
-            return true;
-        }
-        return false;
+    void _addSource(String uri, String ext) {
+        var el = new SourceElement();
+        el.src = uri;
+        el.type = _supportedExtensions[ext];
+        _element.children.add(el);
     }
 
     @override
