@@ -11,12 +11,11 @@ import 'dart:html';
 import 'dart:js';
 
 import '../util/embedjs.dart';
+import '../util/swfobject.dart';
 import '../videoplayer.dart';
 
 // Based upon https://developers.google.com/youtube/js_api_reference
 
-const String DEFAULT_SWFOBJECT_LOCATION = "packages/videoplay/js/swfobject.js";
-const String DEFAULT_SWFOBJECT_NAME = "swfobject";
 
 /**
  * The YouTube video player with all of its native chrome.  This uses the
@@ -316,8 +315,9 @@ class YouTubeEmbedder {
         if (_youTubePlayer != null) {
             context.deleteProperty("${playerId}_onStateChange");
             context.deleteProperty("${playerId}_onError");
-            youTubePlayerWrappingObject.children.remove(_youTubePlayer);
+            youTubePlayerWrappingObject.children.remove(_youTubeElement);
 
+            _youTubeElement = null;
             _youTubePlayer = null;
             _instance = null;
         }

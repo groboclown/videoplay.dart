@@ -16,8 +16,8 @@ import 'src/videoplayer.dart';
 
 
 class YouTubeAttributes extends VideoProviderAttributes {
-    String swfObjectSrcLocation = DEFAULT_SWFOBJECT_LOCATION;
-    String swfObjectName = DEFAULT_SWFOBJECT_NAME;
+    String swfObjectSrcLocation = null;
+    String swfObjectName = null;
 
     YouTubeAttributes() {
         // custom YouTube defaults

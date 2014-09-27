@@ -14,4 +14,5 @@ Each kind of video player has its own documentation on how to use it:
 
 * [YouTube](youtube.md)
 * [HTML 5](html5.md)
+* [Vimeo](vimeo.md)
 * [Create your own provider](extend.md)

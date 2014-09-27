@@ -17,6 +17,9 @@ Right now, it supports:
 * Flash-based
   [YouTube videos](https://developers.google.com/youtube/js_api_reference)
 * HTML 5 video
+* Flash-based [Vimeo videos](http://developer.vimeo.com/player/js-api)
+  _Available in version 0.2.1_
+
 
 
 ## Usage
@@ -125,9 +128,10 @@ localized, or at least a localization pattern will be added.
 
 Limited volume control and querying will be added in future versions.
 
+May look into adding support for making a custom element for this.
 
 ## Authors
 
 The authors, in order of commits:
 
- * Groboclown
+* Groboclown
