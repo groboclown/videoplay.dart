@@ -18,7 +18,10 @@ Right now, it supports:
   [YouTube videos](https://developers.google.com/youtube/js_api_reference)
 * HTML 5 video
 * Flash-based [Vimeo videos](http://developer.vimeo.com/player/js-api)
-  _Available in version 0.2.1_
+  _(available in version 0.2.1)_
+* Flash-based
+  [Twitch videos](https://github.com/justintv/Twitch-API/blob/master/player.md)
+  _(available in version 0.2.1)_
 
 
 

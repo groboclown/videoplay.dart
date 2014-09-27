@@ -16,6 +16,8 @@ import '../videoplayer.dart';
 
 // Based upon https://developers.google.com/youtube/js_api_reference
 
+// FIXME switch this to use the swfobject.dart class.
+
 
 /**
  * The YouTube video player with all of its native chrome.  This uses the

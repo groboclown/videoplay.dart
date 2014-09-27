@@ -13,6 +13,7 @@ import 'videoprovider.dart';
 import '../youtube.dart';
 import '../html5.dart';
 import '../vimeo.dart';
+import '../twitch.dart';
 
 
 typedef Future<VideoPlayer> EmbedVideoPlayer(Element wrappingElement,
@@ -121,6 +122,13 @@ void initializeProviders() {
             registerVideoProvider(
                 new VimeoProvider(),
                 embedVimeo);
+        }
+
+        // Twitch provider
+        if (isTwitchSupported()) {
+            registerVideoProvider(
+                new TwitchProvider(),
+                embedTwitch);
         }
     }
 }

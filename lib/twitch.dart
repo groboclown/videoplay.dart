@@ -4,63 +4,63 @@
 /**
  * Provides support for the Vimeo video player.
  */
-library videoplay.vimeo;
+library videoplay.twitch;
 
 import 'dart:async';
 import 'dart:html';
 
-import 'src/players/vimeo.dart';
+import 'src/players/twitch.dart';
 
 import 'src/videoprovider.dart';
 import 'src/videoplayer.dart';
 
 
-class VimeoAttributes extends VideoProviderAttributes {
+class TwitchAttributes extends VideoProviderAttributes {
     String swfObjectSrcLocation = null;
     String swfObjectName = null;
 }
 
 
-class VimeoProvider implements VideoPlayerProvider {
+class TwitchProvider implements VideoPlayerProvider {
 
     @override
     VideoProviderAttributes createAttributes() {
-        return new VimeoAttributes();
+        return new TwitchAttributes();
     }
 
     @override
-    String get name => "vimeo";
+    String get name => "twitch";
 
     @override
-    String toString() => "Vimeo";
+    String toString() => "Twitch Video";
 }
 
 
-bool isVimeoSupported() {
+bool isTwitchSupported() {
     // FIXME in the future, this should correctly identify if the browser
-    // allows for showing vimeo videos.
+    // allows for showing Twitch videos.
     return true;
 }
 
 
 // a EmbedVideoPlayer
-Future<VideoPlayer> embedVimeo(Element wrappingElement,
-        String videoId, VimeoAttributes attributes) {
-    if (! isVimeoSupported()) {
+Future<VideoPlayer> embedTwitch(Element wrappingElement,
+        String videoId, TwitchAttributes attributes) {
+    if (! isTwitchSupported()) {
         throw new VideoProviderException(
-            "Vimeo videos are not supported on this browser");
+            "Twitch videos are not supported on this browser");
     }
 
     if (attributes == null) {
-        attributes = new VimeoAttributes();
+        attributes = new TwitchAttributes();
     }
 
-    if (! (attributes is VimeoAttributes)) {
+    if (! (attributes is TwitchAttributes)) {
         throw new VideoProviderException(
             "Invalid attribute type: ${attributes}");
     }
 
-    return embedVimeoPlayer(wrappingElement, videoId,
+    return embedTwitchPlayer(wrappingElement, videoId,
             width: attributes.width,
             height: attributes.height,
             swfObjectSrcLocation: attributes.swfObjectSrcLocation,

@@ -67,23 +67,20 @@ class VimeoVideoPlayer implements VideoPlayer {
     void loadVideo(String videoId) {
         // Vimeo doesn't give us a way to reuse the video player,
         // so we must construct a new one.
+        SetupVars vars = _embedder.setupVars;
+
         destroy();
 
         _videoId = videoId;
 
-        // FIXME save off the original factory settings?
-
         createSwfObjectFactory(
-                // FIXME
-                //swfScriptUri: swfObjectSrcLocation,
-                //swfObjName: swfObjectName
-                )
+                swfScriptUri: vars.swfScriptUri,
+                swfObjName: vars.swfObjName)
         .then((SwfObjectFactory factory) {
-            // FIXME store the prevous width/height
-            //factory.width = width;
-            //factory.height = height;
+            factory.width = vars.width;
+            factory.height = vars.height;
             VimeoEmbedder embedder = new VimeoEmbedder(wrappingElement,
-                    videoId, factory);
+                    videoId, factory, vars);
             embedder.loaded.future.then((VimeoEmbedder e) {
                 _embedder = e;
             });
@@ -146,7 +143,8 @@ Future<VideoPlayer> embedVimeoPlayer(Element wrappingElement,
     if (wrappingElement == null) {
         throw new Exception("null arg");
     }
-
+    SetupVars vars = new SetupVars(width, height, swfObjectSrcLocation,
+            swfObjectName);
 
     return createSwfObjectFactory(
             swfScriptUri: swfObjectSrcLocation,
@@ -155,7 +153,7 @@ Future<VideoPlayer> embedVimeoPlayer(Element wrappingElement,
         factory.width = width;
         factory.height = height;
         VimeoEmbedder embedder = new VimeoEmbedder(wrappingElement,
-                videoId, factory);
+                videoId, factory, vars);
         return embedder.loaded.future.then((_) {
             return new VimeoVideoPlayer(embedder, videoId);
         });
@@ -172,6 +170,16 @@ Future<VideoPlayer> embedVimeoPlayer(Element wrappingElement,
 // library.
 
 
+class SetupVars {
+    final int width;
+    final int height;
+    final String swfScriptUri;
+    final String swfObjName;
+
+    SetupVars(this.width, this.height, this.swfScriptUri, this.swfObjName);
+}
+
+
 /**
  * Private inner class that manages the wiring up of the DOM and global JS
  * functions.
@@ -179,6 +187,7 @@ Future<VideoPlayer> embedVimeoPlayer(Element wrappingElement,
 class VimeoEmbedder {
     static int _videoCount = 0;
 
+    final SetupVars setupVars;
     final Completer loaded = new Completer();
     final Element playerWrappingObject;
     final String initialVideoId;
@@ -191,7 +200,7 @@ class VimeoEmbedder {
     Swf swf;
 
     VimeoEmbedder(this.playerWrappingObject,
-            this.initialVideoId, SwfObjectFactory factory) {
+            this.initialVideoId, SwfObjectFactory factory, this.setupVars) {
         factory.wrapperElement = playerWrappingObject;
         String readyCallback = factory.createGlobalContextName("api_ready");
         factory.addGlobalCallback(readyCallback, (_) {

@@ -9,8 +9,9 @@ Added Vimeo support.
 **::Details::**
 
 * Vimeo support added.
-* Added cleaner support for handling video players which are Flash objects.
-  Vimeo is using it, still need to migrate YouTube to it.
+* Twitch support added.
+* Added better support for handling video players which are Flash objects.
+  Vimeo and Twitch are using it, still need to migrate YouTube to it.
 * Bug fixes:
     * More fixes on how YouTube videos clean themselves up when destroyed.
 * Minor cleanup of the CHANGELOG.md.
