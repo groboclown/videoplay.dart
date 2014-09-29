@@ -7,6 +7,8 @@ _Current stable version: 0.2.1.  There are some minor backwards incompatible
 changes with this version, so, if you were using the 0.1 releases, read the
 [CHANGELOG.md](CHANGELOG.md) for details._
 
+_Version under development: 0.2.2_
+
 
 ## Supported Video Services
 
