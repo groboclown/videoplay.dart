@@ -13,10 +13,10 @@ import 'dart:js';
 import '../util/embedjs.dart';
 import '../util/swfobject.dart';
 import '../videoplayer.dart';
+import '../videoprovider.dart' show VideoProviderException;
+
 
 // Based upon https://developers.google.com/youtube/js_api_reference
-
-// FIXME switch this to use the swfobject.dart class.
 
 
 /**
@@ -24,14 +24,14 @@ import '../videoplayer.dart';
  * Flash player to show the video.
  */
 class YouTubeVideoPlayer implements VideoPlayer {
-    final YouTubeEmbedder _embedder;
+    YouTubeEmbedder _embedder;
 
     @override
     bool get hasVideo => videoId != null && errorCode == 0;
 
     @override
     Duration get playbackTime {
-        num seconds = _embedder.youTubePlayer.callMethod('getCurrentTime');
+        num seconds = _embedder.swf.invoke('getCurrentTime');
         return _secondsToDuration(seconds);
     }
 
@@ -42,21 +42,20 @@ class YouTubeVideoPlayer implements VideoPlayer {
         if (_embedder == null) {
             return VideoPlayerStatus.NOT_INITIALIZED;
         }
-        int state = _embedder.youTubePlayer.callMethod('getPlayerState');
+        int state = _embedder.swf.invoke('getPlayerState');
         return YouTubeEmbedder.convertState(state);
     }
 
     @override
     double get percentVideoLoaded {
-        num fraction = _embedder.youTubePlayer.callMethod(
-                'getVideoLoadedFraction');
+        num fraction = _embedder.swf.invoke('getVideoLoadedFraction');
         return fraction * 100.0;
     }
 
 
     @override
     Duration get videoDuration {
-        num seconds = _embedder.youTubePlayer.callMethod('getDuration');
+        num seconds = _embedder.swf.invoke('getDuration');
         return _secondsToDuration(seconds);
     }
 
@@ -66,10 +65,9 @@ class YouTubeVideoPlayer implements VideoPlayer {
     @override
     int get errorCode => _embedder.errorCode;
 
-    final StreamController<VideoPlayerEvent> _statusChangeEvents;
     @override
     Stream<VideoPlayerEvent> get statusChangeEvents =>
-            _statusChangeEvents.stream;
+            _embedder.events;
 
     String _videoId;
     @override
@@ -78,41 +76,41 @@ class YouTubeVideoPlayer implements VideoPlayer {
     @override
     void loadVideo(String videoId) {
         _videoId = videoId;
-        // DEBUG
-        //print("loading the video ${videoId}");
-        _embedder.youTubePlayer.callMethod('loadVideoById', [ videoId ]);
+        _embedder.swf.invoke('loadVideoById', [ videoId ]);
     }
 
     @override
     void play() {
-        _embedder.youTubePlayer.callMethod('playVideo');
+        _embedder.swf.invoke('playVideo');
     }
 
     @override
     void pause() {
-        _embedder.youTubePlayer.callMethod('pauseVideo');
+        _embedder.swf.invoke('pauseVideo');
     }
 
     @override
     void stop() {
-        _embedder.youTubePlayer.callMethod('stopVideo');
+        _embedder.swf.invoke('stopVideo');
     }
 
     @override
     void seekTo(Duration time) {
-        _embedder.youTubePlayer.callMethod('seekTo', [
+        _embedder.swf.invoke('seekTo', [
             time.inMilliseconds / 1000.0, true
         ]);
     }
 
     @override
     void destroy() {
-        _statusChangeEvents.sink.close();
-        _embedder.destroy();
+        if (_embedder != null) {
+            _embedder.destroy();
+            _embedder = null;
+            _videoId = null;
+        }
     }
 
-    YouTubeVideoPlayer(this._embedder, this._videoId,
-        this._statusChangeEvents);
+    YouTubeVideoPlayer(this._embedder, this._videoId);
 
     static Duration _secondsToDuration(num seconds) {
         int secs = seconds.floor();
@@ -145,23 +143,31 @@ class YouTubeVideoPlayer implements VideoPlayer {
  * of the object is different, then set the corret name in
  * [swfObjectName].
  */
-Future<VideoPlayer> embedYouTubeVideoPlayer(Element wrappingElement,
-        String ytVideoId,
+Future<VideoPlayer> embedYouTubePlayer(Element wrappingElement,
+        String videoId,
         {
             int width: 425,
             int height: 356,
             String swfObjectSrcLocation: DEFAULT_SWFOBJECT_LOCATION,
             String swfObjectName: DEFAULT_SWFOBJECT_NAME
         }) {
-    Completer<VideoPlayer> ret = new Completer<VideoPlayer>();
-
     if (wrappingElement == null) {
         throw new Exception("null arg");
     }
 
-    YouTubeEmbedder embeder = new YouTubeEmbedder(ret, wrappingElement,
-            swfObjectSrcLocation, swfObjectName, ytVideoId, width, height);
-    return ret.future;
+    return createSwfObjectFactory(
+            swfScriptUri: swfObjectSrcLocation,
+            swfObjName: swfObjectName)
+    .then((SwfObjectFactory factory) {
+        factory.width = width;
+        factory.height = height;
+        YouTubeEmbedder embedder = new YouTubeEmbedder(wrappingElement,
+                videoId, factory);
+        return embedder.loaded.future.then((_) {
+            embedder.instance = new YouTubeVideoPlayer(embedder, videoId);
+            return embedder.instance;
+        });
+    });
 }
 
 
@@ -184,13 +190,11 @@ class YouTubeEmbedder {
         return _YOUTUBE_PLAYERID_OBJECT_MAP[playerId];
     }
 
-    final Completer<VideoPlayer> player;
-    final Element youTubePlayerWrappingObject;
+    final Completer loaded = new Completer();
+    final Element playerWrappingObject;
     final String playerId;
     final String initialVideoId;
-    YouTubeVideoPlayer _instance;
-    JsObject _youTubePlayer;
-    Element _youTubeElement;
+    YouTubeVideoPlayer instance;
     VideoPlayerStatus _status;
     VideoPlayerStatus get stateChangeStatus => _status;
     int _errorCode = 0;
@@ -198,136 +202,90 @@ class YouTubeEmbedder {
     String _errorText = null;
     String get errorText => _errorText;
 
+    Stream<VideoPlayerEvent> events;
 
-    JsObject get youTubePlayer => _youTubePlayer;
+    Swf swf;
 
-    factory YouTubeEmbedder(Completer<VideoPlayer> player,
-            Element youTubePlayerWrappingObject,
-            String swfScriptUri, String swfObjName, String initialVideoId,
-            int width, int height) {
-        String playerId = '__YOUTUBE__' +
-                _YOUTUBE_PLAYERID_OBJECT_MAP.length.toString();
+
+    YouTubeEmbedder(this.playerWrappingObject,
+            this.initialVideoId, SwfObjectFactory factory) :
+            playerId = factory.contextPrefix {
+
+        // YouTube has a single on-ready method whose name can't be
+        // changed.  We must register it once, and we can't unregister
+        // it due to other YT players potentially being active.
         if (! context.hasProperty('onYouTubePlayerReady')) {
             context['onYouTubePlayerReady'] = YouTubePlayerReady;
         }
-        YouTubeEmbedder ret = new YouTubeEmbedder._(player,
-                youTubePlayerWrappingObject, swfScriptUri, swfObjName,
-                initialVideoId, width, height, playerId);
-        _YOUTUBE_PLAYERID_OBJECT_MAP[playerId] = ret;
-        return ret;
-    }
 
-    YouTubeEmbedder._(this.player, this.youTubePlayerWrappingObject,
-            String swfScriptUri, String swfObjName, this.initialVideoId,
-            int width, int height, this.playerId) {
-        if (swfScriptUri == null) {
-            swfScriptUri = DEFAULT_SWFOBJECT_LOCATION;
-        }
-        if (swfObjName == null) {
-            swfObjName = DEFAULT_SWFOBJECT_NAME;
-        }
+        factory.params = <String, String>{
+            'allowScriptAccess': "always",
+            'allowfullscreen': 'true'
+        };
 
-        // Create the inner object that the SWFObject will replace.  This
-        // gives us control to find the object later via the parent.
-        DivElement element = new DivElement();
-        youTubePlayerWrappingObject.append(element);
-        embedJsScriptObject(swfScriptUri, swfObjName).then((JsObject obj) {
-            var params = <String, String>{ 'allowScriptAccess': "always" };
-            var atts = <String, String>{ 'id': playerId };
-            var vidUrl = initialVideoId == null ? "" : initialVideoId;
-            var url = "http://www.youtube.com/v/${vidUrl}?enablejsapi=1&playerapiid=${playerId}&version=3";
+        factory.attribs = <String, String>{
+            'id': playerId
+        };
+        var vidUrl = initialVideoId == null ? "" : initialVideoId;
+        factory.swfUrl = "http://www.youtube.com/v/${vidUrl}?enablejsapi=1&playerapiid=${playerId}&version=3";
+        factory.swfVersion = "8";
 
-            //print("Youtube player url: " + url);
-
-            obj.callMethod('embedSWF', [
-                    url, element,
-                    width.toString(), height.toString(), "8",
-                    null, null,
-                    new  JsObject.jsify(params),
-                    new JsObject.jsify(atts)
-                ]);
-
-        }).catchError((var e) {
-            player.completeError(e);
-        });
+        swf = factory.embedSwf(swfObjectId: playerId);
     }
 
 
     void onYouTubePlayerReady() {
-        // DEBUG
-        //print("player ${playerId} ready");
-
-        // Find the embedded object.  Because we may be in a shadow DOM,
-        // we need to just ask the parent wrapping object.
-        for (Element el in youTubePlayerWrappingObject.children) {
-            if (el.attributes.containsKey('id') &&
-                    el.getAttribute('id') == playerId) {
-                // DEBUG
-                //print("- found its html object");
-
-                _youTubeElement = el;
-                _youTubePlayer = new JsObject.fromBrowserObject(el);
-
-                StreamController<VideoPlayerEvent> events =
-                        new StreamController<VideoPlayerEvent>.broadcast();
-                context["${playerId}_onStateChange"] = (int state) {
-                    // DEBUG
-                    //print("YT state changed to ${state}");
-                    VideoPlayerStatus status = convertState(state);
-                    if (status != null) {
-                        // No longer in an error state
-                        _errorText = null;
-                        _errorCode = 0;
-                        events.add(new VideoPlayerEvent(_instance,
-                                new DateTime.now(), status));
-                    }
-                };
-                _youTubePlayer.callMethod('addEventListener',
-                        [ "onStateChange",  "${playerId}_onStateChange"]);
-
-                // onPlaybackQualityChange - ignore
-                // onPlaybackRateChange - ignore
-
-                context["${playerId}_onError"] = (int errCode) {
-                    _errorCode = errCode;
-                    _errorText = _convertError(errCode);
-
-                    // DEBUG
-                    //print("YT error ${errCode} (${error})");
-
-                    if (_errorText != null) {
-                        events.add(new VideoPlayerEvent(_instance,
-                                new DateTime.now(), VideoPlayerStatus.ERROR,
-                                _errorText, errCode));
-                    }
-                };
-                _youTubePlayer.callMethod('addEventListener',
-                        [ "onError",  "${playerId}_onError"]);
-
-                // onApiChange - ignore
-
-
-                _instance = new YouTubeVideoPlayer(this, initialVideoId,
-                        events);
-                player.complete(_instance);
-
-                return;
+        swf.addEventListener('onStateChange', (int state) {
+            VideoPlayerStatus status = convertState(state);
+            if (status != null) {
+                // No longer in an error state
+                _errorText = null;
+                _errorCode = 0;
             }
-        }
+            return status;
+        });
 
-        print("ERROR: Could not find the YouTube swf object");
+        // onPlaybackQualityChange - ignore
+        // onPlaybackRateChange - ignore
+
+        swf.addEventListener('onError', (int errCode) {
+            _errorCode = errCode;
+            _errorText = _convertError(errCode);
+
+            // DEBUG
+            //print("YT error ${errCode} (${error})");
+
+            if (_errorText != null) {
+                return new VideoPlayerEvent(instance,
+                        new DateTime.now(), VideoPlayerStatus.ERROR,
+                        _errorText, errCode);
+            } else {
+                return null;
+            }
+        });
+
+        events = swf.events
+            .where((SwfEvent e) => e.eventValue != null)
+            .map((SwfEvent e) {
+                var val = e.eventValue;
+                if (val is VideoPlayerEvent) {
+                    _status = val.status;
+                    return val;
+                } else {
+                    _status = e.eventValue;
+                    return new VideoPlayerEvent(instance, e.when, _status);
+                }
+            });
+
+        loaded.complete();
     }
 
 
     void destroy() {
-        if (_youTubePlayer != null) {
-            context.deleteProperty("${playerId}_onStateChange");
-            context.deleteProperty("${playerId}_onError");
-            youTubePlayerWrappingObject.children.remove(_youTubeElement);
-
-            _youTubeElement = null;
-            _youTubePlayer = null;
-            _instance = null;
+        if (swf != null) {
+            swf.destroy();
+            swf = null;
+            instance = null;
         }
     }
 
@@ -379,7 +337,7 @@ void YouTubePlayerReady(String playerId) {
     YouTubeEmbedder emb = YouTubeEmbedder.findEmbedderForPlayerId(playerId);
     if (emb == null) {
         print("No such player id ${playerId}");
-        throw new Exception("No such player id: ${playerId}");
+        throw new VideoProviderException("No such player id: ${playerId}");
     }
 
     emb.onYouTubePlayerReady();

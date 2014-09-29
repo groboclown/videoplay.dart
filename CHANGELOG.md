@@ -4,10 +4,19 @@
 
 **::Overview::**
 
-(nothing here yet)
+Rewrote the YouTube player to use the new flash player code.
+
+Some minor bug fixes.
 
 **::Details::**
 
+* YouTube provider uses the new SwfObject.dart class.
+* Removed the `embedYouTubeVideoPlayer` function from the deeply buried
+  youtube.dart file.  This is a backwards incompatible change for version 0.1
+  users.
+* Bug fixes:
+    * Fixed the Vimeo and Twitch players where they were passing "null" as the
+      player in the events.
 
 ## 0.2.1
 
