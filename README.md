@@ -3,9 +3,12 @@
 A video player library for Dart.  Allows for easy embedding of common video
 players into your web page.
 
-_Current stable version: 0.2.1.  There are some minor backwards incompatible
-changes with this version, so, if you were using the 0.1 releases, read the
-[CHANGELOG.md](CHANGELOG.md) for details._
+If you're looking to embed videos, and not interact with them, then the
+[videopoly.dart](https://pub.dartlang.org/packages/videopoly) could be what
+you want - it provides custom Dart Polymer elements on top of this library to
+make embedding the supported video player providers easy.
+
+_Current stable version: 0.2.1_
 
 _Version under development: 0.2.2_
 
@@ -122,14 +125,18 @@ Check out the [examples](example/README.md) for the library in practice.
 
 ## The Future
 
-Future versions are expected to support more video player types.
+Future versions are expected to support more video player types.  Looking into:
+
+* Flow Player - looks to be
+  [well documented](http://flash.flowplayer.org/documentation/api/)
+* Blip.tv - public API is deprecated.
+* Screenwave Media - very little documentation.
 
 Many of the text strings in the library are in English.  These will need to be
 localized, or at least a localization pattern will be added.
 
 Limited volume control and querying will be added in future versions.
 
-May look into adding support for making a custom element for this.
 
 ## Authors
 
