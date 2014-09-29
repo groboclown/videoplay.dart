@@ -1,10 +1,10 @@
 # Change History for videoplay.dart
 
-## 0.2.1 (unreleased)
+## 0.2.1
 
 **::Overview::**
 
-Added Vimeo support.
+Added Vimeo and Twitch support.
 
 **::Details::**
 

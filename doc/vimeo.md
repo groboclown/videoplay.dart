@@ -1,6 +1,6 @@
 # Using Vimeo Embedded Video With `videoplay.dart`
 
-
+The video id is the long number associated with the Vimeo videos.
 
 _TODO add notes as they are discovered._
 

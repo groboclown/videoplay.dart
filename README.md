@@ -3,11 +3,9 @@
 A video player library for Dart.  Allows for easy embedding of common video
 players into your web page.
 
-_Current stable version: 0.2.0.  There are some minor backwards incompatible
+_Current stable version: 0.2.1.  There are some minor backwards incompatible
 changes with this version, so, if you were using the 0.1 releases, read the
 [CHANGELOG.md](CHANGELOG.md) for details._
-
-_Version under development: 0.2.1_
 
 
 ## Supported Video Services
@@ -18,10 +16,8 @@ Right now, it supports:
   [YouTube videos](https://developers.google.com/youtube/js_api_reference)
 * HTML 5 video
 * Flash-based [Vimeo videos](http://developer.vimeo.com/player/js-api)
-  _(available in version 0.2.1)_
 * Flash-based
   [Twitch videos](https://github.com/justintv/Twitch-API/blob/master/player.md)
-  _(available in version 0.2.1)_
 
 
 

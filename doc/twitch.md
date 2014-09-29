@@ -7,6 +7,8 @@ ID is `c5183949`.  The Twitch provider automatically converts the ID.
 
 The embedder only supports videos right now, not streams.
 
+## Limitations with the implementation
+
 The status updates from Twitch are pretty limited.  The event stream isn't good.
 Future versions may need to have a timer to check the state and send event
 stream updates.
