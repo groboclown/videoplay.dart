@@ -66,7 +66,7 @@ Future<VideoPlayer> embedYouTube(Element wrappingElement,
             "Invalid attribute type: ${attributes}");
     }
 
-    return embedYouTubeVideoPlayer(wrappingElement,
+    return embedYouTubePlayer(wrappingElement,
             videoId, width: attributes.width, height: attributes.height,
             swfObjectSrcLocation: attributes.swfObjectSrcLocation,
             swfObjectName: attributes.swfObjectName);
