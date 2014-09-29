@@ -155,7 +155,8 @@ Future<VideoPlayer> embedVimeoPlayer(Element wrappingElement,
         VimeoEmbedder embedder = new VimeoEmbedder(wrappingElement,
                 videoId, factory, vars);
         return embedder.loaded.future.then((_) {
-            return new VimeoVideoPlayer(embedder, videoId);
+            embedder.instance = new VimeoVideoPlayer(embedder, videoId);
+            return embedder.instance;
         });
     });
 }

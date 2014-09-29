@@ -143,7 +143,8 @@ Future<VideoPlayer> embedTwitchPlayer(Element wrappingElement,
         TwitchEmbedder embedder = new TwitchEmbedder(wrappingElement,
                 videoId, factory);
         return embedder.loaded.future.then((_) {
-            return new TwitchVideoPlayer(embedder, videoId);
+            embedder.instance = new TwitchVideoPlayer(embedder, videoId);
+            return embedder.instance;
         });
     });
 }
