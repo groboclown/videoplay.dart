@@ -328,7 +328,7 @@ class Html5VideoPlayer implements VideoPlayer {
                     errorText, errorCode));
         });
         //_element.onLoadedMetaData.listen((_) {
-        _element.onLoadStart.listen((_) {
+        _element.onLoad.listen((_) {
             _events.sink.add(new VideoPlayerEvent(
                     this, new DateTime.now(), VideoPlayerStatus.NOT_STARTED,
                     errorText, errorCode));

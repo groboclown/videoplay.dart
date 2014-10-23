@@ -1,6 +1,6 @@
 # Change History for videoplay.dart
 
-## 0.2.2 (unreleased)
+## 0.2.2
 
 **::Overview::**
 
@@ -17,6 +17,8 @@ Some minor bug fixes.
 * Bug fixes:
     * Fixed the Vimeo and Twitch players where they were passing "null" as the
       player in the events.
+    * Updated the html5 player to remove the old onLoadStart event (Dart 1.7
+      api update).
 
 ## 0.2.1
 

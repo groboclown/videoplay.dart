@@ -10,7 +10,6 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:js';
 
-import '../util/embedjs.dart';
 import '../util/swfobject.dart';
 import '../videoplayer.dart';
 import '../videoprovider.dart' show VideoProviderException;
