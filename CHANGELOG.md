@@ -1,15 +1,16 @@
 # Change History for videoplay.dart
 
 
-## 0.2.4 (unreleased)
+## 0.2.4
 
 **::Overview::**
 
-No changes yet
+Bug fixes to the YouTube player.
 
 **::Details::**
 
-No changes yet
+* Bug fixes:
+    * YouTube wasn't correctly identifying the embedded players.
 
 
 ## 0.2.3

@@ -231,6 +231,8 @@ class YouTubeEmbedder {
         factory.swfVersion = "8";
 
         swf = factory.embedSwf(swfObjectId: playerId);
+
+        _YOUTUBE_PLAYERID_OBJECT_MAP[playerId] = this;
     }
 
 
