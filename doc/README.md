@@ -5,7 +5,7 @@
 The `videoplay.dart` library has a common API to interact with videos, which
 is detailed [here](common.md).
 
-For most uses, it's sufficient to 
+For most cases, it's sufficient to use the direct method.
 
 
 ## Video Type
