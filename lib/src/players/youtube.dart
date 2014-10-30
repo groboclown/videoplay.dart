@@ -226,6 +226,7 @@ class YouTubeEmbedder {
             'id': playerId
         };
         var vidUrl = initialVideoId == null ? "" : initialVideoId;
+        factory.wrapperElement = playerWrappingObject;
         factory.swfUrl = "http://www.youtube.com/v/${vidUrl}?enablejsapi=1&playerapiid=${playerId}&version=3";
         factory.swfVersion = "8";
 

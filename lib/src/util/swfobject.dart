@@ -83,6 +83,9 @@ class SwfObjectFactory {
         if (_state != 0) {
             throw new SwfObjectException("already embedded swf object");
         }
+        if (wrapperElement == null) {
+            throw new SwfObjectException("wrapper element not set");
+        }
         _state = 1;
 
         DivElement replaced = new DivElement();

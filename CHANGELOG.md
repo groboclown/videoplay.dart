@@ -4,10 +4,15 @@
 
 **::Overview::**
 
-Nothing yet.
+Bug fixes to the YouTube player.
 
 **::Details::**
 
+* Bug fixes:
+    * The switch of the YouTube player over to the SWF standard component
+      introduced a bug where the wrapping element was never set.
+    * Added a check in the SWF object to ensure the wrapping element is indeed
+      set to prevent this kind of error from getting too far.
 
 ## 0.2.2
 
