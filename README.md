@@ -8,9 +8,7 @@ If you're looking to embed videos, and not interact with them, then the
 you want - it provides custom Dart Polymer elements on top of this library to
 make embedding the supported video player providers easy.
 
-_Current stable version: 0.2.3_
-
-_Version in development: 0.2.4_
+_Current stable version: 0.2.4_
 
 ## Supported Video Services
 
