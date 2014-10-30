@@ -10,6 +10,7 @@ make embedding the supported video player providers easy.
 
 _Current stable version: 0.2.3_
 
+_Version in development: 0.2.4_
 
 ## Supported Video Services
 
